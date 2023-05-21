@@ -35,7 +35,7 @@ async function run() {
         // await client.connect();
 
         const toyCollections = client.db("toyCollection").collection("toys");
-
+        const newToyCollections = client.db("toyCollection").collection("newToys");
 
         app.get('/allToys', async (req, res) => {
             const cursor = toyCollections.find()
@@ -43,6 +43,12 @@ async function run() {
             res.send(result)
         })
 
+        // toy added by user 
+        app.post('/addAToy', async (req, res) => {
+            const body = req.body
+            const result = await newToyCollections.insertOne(body);
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
