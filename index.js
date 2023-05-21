@@ -6,13 +6,18 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
 // middleware
-app.use(cors())
+
 app.use(express.json())
 
+const corsConfig = {
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}
 
+app.use(cors(corsConfig))
 
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PAss}@cluster0.sdtdalu.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.sdtdalu.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -27,12 +32,12 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const toyCollections = client.db("toyCollection").collection("toys");
 
 
-        app.get('/toys', async (req, res) => {
+        app.get('/allToys', async (req, res) => {
             const cursor = toyCollections.find()
             const result = await cursor.toArray();
             res.send(result)
