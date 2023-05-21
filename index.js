@@ -18,7 +18,7 @@ const corsConfig = {
 app.use(cors(corsConfig))
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.sdtdalu.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -42,6 +42,23 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
         })
+        // get add  a toy 
+        app.get('/addAToy', async (req, res) => {
+            const cursor = newToyCollections.find();
+            const result = await cursor.toArray()
+            res.send(result);
+        })
+        // get a toy using email 
+        app.get('/getAToy', async (req, res) => {
+            let query = {}
+            console.log(req.query.email);
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const cursor = newToyCollections.find(query);
+            const result = await cursor.toArray()
+            res.send(result);
+        })
 
         // toy added by user 
         app.post('/addAToy', async (req, res) => {
@@ -49,6 +66,7 @@ async function run() {
             const result = await newToyCollections.insertOne(body);
             res.send(result);
         })
+
 
 
         // Send a ping to confirm a successful connection
