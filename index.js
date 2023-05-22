@@ -60,7 +60,28 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result);
         })
+        // single data get 
+        app.get('/addAToy/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await newToyCollections.findOne(query);
+            res.send(result)
+        });
+        app.put('/addAToy/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const update = req.body;
 
+            const updateDoc = {
+                $set: {
+                    price: update.price, quantity: update.quantity, description: update.description
+                },
+            };
+
+            const result = await newToyCollections.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
 
         // toy added by user 
         app.post('/addAToy', async (req, res) => {
@@ -69,20 +90,16 @@ async function run() {
             res.send(result);
         })
 
+
+
+
+
         app.delete('/addAToy/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await newToyCollections.deleteOne(query);
             res.send(result)
         })
-        // single data get 
-        app.get('/addAToy/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await newToyCollections.findOne(query);
-            res.send(result)
-        })
-
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
