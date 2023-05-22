@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 5000
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 // middleware
@@ -42,16 +42,11 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
         })
-        // get add  a toy 
-        app.get('/addAToy', async (req, res) => {
-            const cursor = newToyCollections.find();
-            const result = await cursor.toArray()
-            res.send(result);
-        })
+
         // get a toy using email 
-        app.get('/getAToy', async (req, res) => {
+        app.get('/addAToy', async (req, res) => {
             let query = {}
-            console.log(req.query.email);
+
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
@@ -59,6 +54,13 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result);
         })
+        // get add  a toy 
+        app.get('/addAToy', async (req, res) => {
+            const cursor = newToyCollections.find();
+            const result = await cursor.toArray()
+            res.send(result);
+        })
+
 
         // toy added by user 
         app.post('/addAToy', async (req, res) => {
@@ -67,7 +69,12 @@ async function run() {
             res.send(result);
         })
 
-
+        app.delete('/addAToy/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await newToyCollections.deleteOne(query);
+            res.send(result)
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
